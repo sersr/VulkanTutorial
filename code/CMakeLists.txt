@@ -1,21 +1,43 @@
-cmake_minimum_required (VERSION 3.8)
+cmake_minimum_required (VERSION 3.18)
 
 project (VulkanTutorial)
 
-find_package (glfw3 REQUIRED)
-find_package (glm REQUIRED)
+# find_package (glfw3 REQUIRED)
+# find_package (glm REQUIRED)
 find_package (Vulkan REQUIRED)
-find_package (tinyobjloader REQUIRED)
 
-find_package (PkgConfig)
-pkg_get_variable (STB_INCLUDEDIR stb includedir)
-if (NOT STB_INCLUDEDIR)
-  unset (STB_INCLUDEDIR)
-  find_path (STB_INCLUDEDIR stb_image.h PATH_SUFFIXES stb)
-endif ()
-if (NOT STB_INCLUDEDIR)
-  message (FATAL_ERROR "stb_image.h not found")
-endif ()
+include(FetchContent)
+
+FetchContent_Declare(
+    tinyobjloader
+    GIT_REPOSITORY https://github.com/tinyobjloader/tinyobjloader.git
+    GIT_TAG 3bb554c
+)
+
+FetchContent_MakeAvailable(tinyobjloader)
+
+FetchContent_Declare(
+    stb
+    GIT_REPOSITORY https://github.com/nothings/stb.git
+    GIT_TAG f056911
+)
+
+FetchContent_MakeAvailable(stb)
+
+FetchContent_Declare(
+    glfw
+    GIT_REPOSITORY https://github.com/glfw/glfw.git
+    GIT_TAG e7ea71b
+)
+
+FetchContent_MakeAvailable(glfw)
+FetchContent_Declare(
+    glm
+    GIT_REPOSITORY https://github.com/g-truc/glm.git
+    GIT_TAG 2d4c4b4
+)
+
+FetchContent_MakeAvailable(glm)
 
 add_executable (glslang::validator IMPORTED)
 find_program (GLSLANG_VALIDATOR "glslangValidator" HINTS $ENV{VULKAN_SDK}/bin REQUIRED)
@@ -55,7 +77,12 @@ function (add_chapter CHAPTER_NAME)
     RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CHAPTER_NAME})
   set_target_properties (${CHAPTER_NAME} PROPERTIES CXX_STANDARD 17)
   target_link_libraries (${CHAPTER_NAME} Vulkan::Vulkan glfw)
-  target_include_directories (${CHAPTER_NAME} PRIVATE ${STB_INCLUDEDIR})
+  target_include_directories (${CHAPTER_NAME} PRIVATE ${stb_SOURCE_DIR})
+
+#   # 设置包含目录
+# target_include_directories(your_target PRIVATE 
+# ${stb_SOURCE_DIR}
+# )
 
   if (DEFINED CHAPTER_SHADER)
     set (CHAPTER_SHADER_TARGET ${CHAPTER_NAME}_shader)
@@ -167,19 +194,19 @@ add_chapter (28_model_loading
   SHADER 27_shader_depth
   MODELS ../resources/viking_room.obj
   TEXTURES ../resources/viking_room.png
-  LIBS glm::glm tinyobjloader::tinyobjloader)
+  LIBS glm::glm tinyobjloader)
 
 add_chapter (29_mipmapping
   SHADER 27_shader_depth
   MODELS ../resources/viking_room.obj
   TEXTURES ../resources/viking_room.png
-  LIBS glm::glm tinyobjloader::tinyobjloader)
+  LIBS glm::glm tinyobjloader)
 
 add_chapter (30_multisampling
   SHADER 27_shader_depth
   MODELS ../resources/viking_room.obj
   TEXTURES ../resources/viking_room.png
-  LIBS glm::glm tinyobjloader::tinyobjloader)
+  LIBS glm::glm tinyobjloader)
 
 add_chapter (31_compute_shader
   SHADER 31_shader_compute
