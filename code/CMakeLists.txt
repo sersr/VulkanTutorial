@@ -6,6 +6,7 @@ project (VulkanTutorial)
 # find_package (glm REQUIRED)
 find_package (Vulkan REQUIRED)
 
+set(CMAKE_CXX_STANDARD 20)
 include(FetchContent)
 
 FetchContent_Declare(
